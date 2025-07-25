@@ -1,0 +1,5 @@
+{
+  "name": "AI Art Generator",
+  "description": "Generate stunning and unique images from text prompts using Google's Imagen 3 model. Describe your vision and let the AI bring it to life in seconds.",
+  "requestFramePermissions": []
+}
