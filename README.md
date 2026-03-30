@@ -3,10 +3,6 @@
 
 A clean, modern, and responsive web application that allows you to generate stunning and unique images from text prompts using Google's powerful Imagen 3 model. Describe your vision, and let the AI bring it to life in seconds.
 
-**[➡️ View Live Demo (Requires Setup)](#deployment-to-github-pages)**
-
-![AI Art Generator Screenshot](https://storage.googleapis.com/framer-media/assets/3L1sA6pVTk9n0Jb6d2tI41Jg.png)
-
 ## ✨ Features
 
 - **Text-to-Image Generation**: Utilizes the `imagen-3.0-generate-002` model for high-quality image creation.
