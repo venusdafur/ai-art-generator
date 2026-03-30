@@ -45,41 +45,25 @@ This project uses Vite for local development and production builds.
     npm install
     ```
 
-3.  **Create a local environment file:**
-    Create a `.env.local` file in the project root:
-    ```bash
-    GEMINI_API_KEY=your_gemini_api_key_here
-    ```
-
-4.  **Run the application:**
+3.  **Run the application:**
     ```bash
     npm run dev
     ```
 
+4.  **Enter your Gemini API key in the app:**
+    The application prompts for a Google Gemini API key in the page UI and stores it in your browser's local storage on that device.
+
 ## 🌐 Deployment to GitHub Pages
 
-To make the application work on GitHub Pages, you cannot expose your API key in the client-side code. The best practice is to use GitHub Actions to securely inject the key during the deployment process.
+The GitHub Pages deployment is fully static. Users provide their own Gemini API key in the page UI, so no repository secret is required for the site to work.
 
-### Step 1: Create a Repository Secret
+### Step 1: Push the included GitHub Actions workflow
 
-1.  In your GitHub repository, go to **Settings** > **Secrets and variables** > **Actions**.
-2.  Click **New repository secret**.
-3.  Set the **Name** to `GEMINI_API_KEY`.
-4.  Paste your Google Gemini API Key into the **Secret** field.
-5.  Click **Add secret**.
+This repository includes a GitHub Pages workflow at `.github/workflows/deploy.yml`. The workflow installs dependencies, builds the app with Vite, and uploads the generated `dist/` directory to GitHub Pages.
 
-### Step 2: Push the included GitHub Actions workflow
-
-This repository now includes a GitHub Pages workflow at `.github/workflows/deploy.yml`. The workflow:
-
-- installs dependencies with `npm ci`
-- builds the app with Vite
-- injects `GEMINI_API_KEY` at build time from GitHub Actions secrets
-- uploads the generated `dist/` directory to GitHub Pages
-
-### Step 3: Configure GitHub Pages Source
+### Step 2: Configure GitHub Pages Source
 
 1.  In your GitHub repository, go to **Settings** > **Pages**.
 2.  Under **Build and deployment**, set the **Source** to **GitHub Actions**.
 
-Now, every time you push a change to your `main` branch, the GitHub Action will build and deploy the site automatically. Your live site will be available at `https://<your-github-username>.github.io/<your-repo-name>/`.
+Now, every time you push a change to your `main` branch, the GitHub Action will build and deploy the site automatically. Visitors can enter their own Gemini API key in the page UI. Your live site will be available at `https://<your-github-username>.github.io/<your-repo-name>/`.

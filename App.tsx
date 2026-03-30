@@ -1,10 +1,11 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { generateImage } from './services/geminiService';
 import Spinner from './components/Spinner';
 import Alert from './components/Alert';
 import { WandIcon, DownloadIcon } from './components/Icon';
 
+const API_KEY_STORAGE_KEY = 'gemini-api-key';
 const EXAMPLE_PROMPTS = [
   "A majestic lion with a shimmering, cosmic mane, standing on a lunar surface, photorealistic.",
   "An enchanted forest at twilight, with glowing mushrooms and streams of sparkling water, fantasy art.",
@@ -13,20 +14,41 @@ const EXAMPLE_PROMPTS = [
 ];
 
 const App: React.FC = () => {
+  const [apiKey, setApiKey] = useState<string>('');
   const [prompt, setPrompt] = useState<string>(EXAMPLE_PROMPTS[0]);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    const savedApiKey = window.localStorage.getItem(API_KEY_STORAGE_KEY);
+    if (savedApiKey) {
+      setApiKey(savedApiKey);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (apiKey.trim()) {
+      window.localStorage.setItem(API_KEY_STORAGE_KEY, apiKey);
+      return;
+    }
+
+    window.localStorage.removeItem(API_KEY_STORAGE_KEY);
+  }, [apiKey]);
+
   const handleGenerateImage = useCallback(async () => {
     if (!prompt || isLoading) return;
+    if (!apiKey.trim()) {
+      setError('Enter your Google Gemini API key before generating an image.');
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
     setImageUrl(null);
 
     try {
-      const generatedImageUrl = await generateImage(prompt);
+      const generatedImageUrl = await generateImage(prompt, apiKey);
       setImageUrl(generatedImageUrl);
     } catch (e) {
       const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred.';
@@ -35,7 +57,11 @@ const App: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [prompt, isLoading]);
+  }, [apiKey, prompt, isLoading]);
+
+  const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setApiKey(e.target.value);
+  };
 
   const handlePromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setPrompt(e.target.value);
@@ -54,6 +80,24 @@ const App: React.FC = () => {
             <h1 className="text-4xl font-bold text-white">AI Art Generator</h1>
             <p className="text-slate-400 mt-2">Powered by Google's Imagen 3 Model</p>
           </header>
+
+          <div className="space-y-2">
+             <label htmlFor="apiKey" className="block text-lg font-medium text-slate-300">Gemini API key</label>
+             <input
+                id="apiKey"
+                type="password"
+                value={apiKey}
+                onChange={handleApiKeyChange}
+                placeholder="Paste your Google Gemini API key"
+                className="w-full p-3 bg-slate-800 border-2 border-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
+                autoComplete="off"
+                spellCheck={false}
+                disabled={isLoading}
+             />
+             <p className="text-sm text-slate-400">
+               Stored in your browser on this device and used for image generation requests.
+             </p>
+          </div>
           
           <div className="space-y-4">
              <label htmlFor="prompt" className="block text-lg font-medium text-slate-300">Enter your prompt</label>
@@ -85,7 +129,7 @@ const App: React.FC = () => {
 
           <button
             onClick={handleGenerateImage}
-            disabled={isLoading || !prompt}
+            disabled={isLoading || !prompt || !apiKey.trim()}
             className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition-all duration-200 disabled:bg-indigo-900 disabled:text-slate-400 disabled:cursor-not-allowed transform hover:scale-105 active:scale-100"
           >
             {isLoading ? (

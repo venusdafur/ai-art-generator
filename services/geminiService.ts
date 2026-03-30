@@ -1,20 +1,22 @@
 
 import { GoogleGenAI } from "@google/genai";
 
-// Ensure the API key is available from environment variables.
-const API_KEY = process.env.API_KEY;
-if (!API_KEY) {
-  throw new Error("Missing Google Gemini API Key. Please set the API_KEY environment variable.");
-}
-
-const ai = new GoogleGenAI({ apiKey: API_KEY });
+const FALLBACK_API_KEY = process.env.API_KEY;
 
 /**
  * Generates an image using the Imagen 3 model.
  * @param prompt The text prompt to generate an image from.
+ * @param apiKey The Gemini API key provided by the user.
  * @returns A promise that resolves to a base64 encoded JPEG image string.
  */
-export const generateImage = async (prompt: string): Promise<string> => {
+export const generateImage = async (prompt: string, apiKey?: string): Promise<string> => {
+  const resolvedApiKey = apiKey?.trim() || FALLBACK_API_KEY;
+  if (!resolvedApiKey) {
+    throw new Error("Enter a Google Gemini API key to generate an image.");
+  }
+
+  const ai = new GoogleGenAI({ apiKey: resolvedApiKey });
+
   try {
     const response = await ai.models.generateImages({
       model: 'imagen-3.0-generate-002',
