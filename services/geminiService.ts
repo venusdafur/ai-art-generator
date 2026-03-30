@@ -7,6 +7,7 @@ const IMAGEN_MODELS = new Set(['imagen-4.0-generate-001']);
 export const IMAGE_MODELS = {
   imagen4: 'imagen-4.0-generate-001',
   nanoBanana: 'gemini-2.5-flash-image',
+  nanoBananaPro: 'gemini-3-pro-image-preview',
 } as const;
 
 export type ImageModel = typeof IMAGE_MODELS[keyof typeof IMAGE_MODELS];

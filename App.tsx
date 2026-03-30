@@ -10,6 +10,7 @@ const MODEL_STORAGE_KEY = 'image-model';
 const MODEL_OPTIONS: Array<{ value: ImageModel; label: string }> = [
   { value: IMAGE_MODELS.imagen4, label: 'Imagen 4' },
   { value: IMAGE_MODELS.nanoBanana, label: 'Nano Banana' },
+  { value: IMAGE_MODELS.nanoBananaPro, label: 'Nano Banana Pro' },
 ];
 const EXAMPLE_PROMPTS = [
   "A majestic lion with a shimmering, cosmic mane, standing on a lunar surface, photorealistic.",
