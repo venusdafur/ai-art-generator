@@ -4,7 +4,7 @@ import { GoogleGenAI } from "@google/genai";
 const FALLBACK_API_KEY = process.env.API_KEY;
 
 /**
- * Generates an image using the Imagen 3 model.
+ * Generates an image using the Imagen 4 model.
  * @param prompt The text prompt to generate an image from.
  * @param apiKey The Gemini API key provided by the user.
  * @returns A promise that resolves to a base64 encoded JPEG image string.
@@ -19,7 +19,7 @@ export const generateImage = async (prompt: string, apiKey?: string): Promise<st
 
   try {
     const response = await ai.models.generateImages({
-      model: 'imagen-3.0-generate-002',
+      model: 'imagen-4.0-generate-001',
       prompt: prompt,
       config: {
         numberOfImages: 1,

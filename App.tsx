@@ -78,7 +78,7 @@ const App: React.FC = () => {
         <div className="lg:w-1/2 flex flex-col gap-6">
           <header className="text-center lg:text-left">
             <h1 className="text-4xl font-bold text-white">AI Art Generator</h1>
-            <p className="text-slate-400 mt-2">Powered by Google's Imagen 3 Model</p>
+            <p className="text-slate-400 mt-2">Powered by Google's Imagen 4 model</p>
           </header>
 
           <div className="space-y-2">
