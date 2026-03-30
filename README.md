@@ -25,7 +25,7 @@ A clean, modern, and responsive web application that allows you to generate stun
 
 ## 🚀 Getting Started
 
-This project is set up to run directly in the browser without a traditional build step.
+This project uses Vite for local development and production builds.
 
 ### Prerequisites
 
@@ -40,22 +40,21 @@ This project is set up to run directly in the browser without a traditional buil
     cd ai-art-generator
     ```
 
-2.  **Handle the API Key:**
-    The application is hard-coded to look for the API key in `process.env.API_KEY`. For local testing, you must temporarily modify the service file.
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
 
-    - Open `services/geminiService.ts`.
-    - **Temporarily** replace `process.env.API_KEY` with your actual API key string:
-      ```typescript
-      // Before
-      const API_KEY = process.env.API_KEY;
+3.  **Create a local environment file:**
+    Create a `.env.local` file in the project root:
+    ```bash
+    GEMINI_API_KEY=your_gemini_api_key_here
+    ```
 
-      // After (for local testing only)
-      const API_KEY = "YOUR_GEMINI_API_KEY_HERE"; 
-      ```
-    - **⚠️ IMPORTANT:** Do **NOT** commit this change. This is for local testing only. Revert this change before pushing your code. The deployment section below details the secure way to handle keys.
-
-3.  **Run the application:**
-    Since there is no build server, you can use a simple static file server or a browser extension like "Live Server" for VS Code to serve the `index.html` file.
+4.  **Run the application:**
+    ```bash
+    npm run dev
+    ```
 
 ## 🌐 Deployment to GitHub Pages
 
@@ -69,54 +68,18 @@ To make the application work on GitHub Pages, you cannot expose your API key in 
 4.  Paste your Google Gemini API Key into the **Secret** field.
 5.  Click **Add secret**.
 
-### Step 2: Create the GitHub Actions Workflow
+### Step 2: Push the included GitHub Actions workflow
 
-1.  Create a directory named `.github/workflows` in the root of your project.
-2.  Inside that directory, create a new file named `deploy.yml`.
-3.  Paste the following content into `deploy.yml`:
+This repository now includes a GitHub Pages workflow at `.github/workflows/deploy.yml`. The workflow:
 
-    ```yaml
-    name: Deploy to GitHub Pages
-
-    on:
-      push:
-        branches:
-          - main # Or whichever branch you use as your primary
-
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-
-    jobs:
-      build-and-deploy:
-        runs-on: ubuntu-latest
-        steps:
-          - name: Checkout 🛎️
-            uses: actions/checkout@v4
-
-          - name: Replace API Key 🔑
-            # This step securely replaces the placeholder in the service file
-            # with the secret key you configured in repository settings.
-            run: |
-              sed -i "s|process.env.API_KEY|'${{ secrets.GEMINI_API_KEY }}'|g" services/geminiService.ts
-            
-          - name: Setup Pages
-            uses: actions/configure-pages@v4
-
-          - name: Upload artifact
-            uses: actions/upload-pages-artifact@v3
-            with:
-              path: '.' # Upload all files from the root directory
-
-          - name: Deploy to GitHub Pages 🚀
-            id: deployment
-            uses: actions/deploy-pages@v4
-    ```
+- installs dependencies with `npm ci`
+- builds the app with Vite
+- injects `GEMINI_API_KEY` at build time from GitHub Actions secrets
+- uploads the generated `dist/` directory to GitHub Pages
 
 ### Step 3: Configure GitHub Pages Source
 
 1.  In your GitHub repository, go to **Settings** > **Pages**.
 2.  Under **Build and deployment**, set the **Source** to **GitHub Actions**.
 
-Now, every time you push a change to your `main` branch, the GitHub Action will automatically run, replace the API key placeholder, and deploy your application to GitHub Pages. Your live site will be available at `https://<your-github-username>.github.io/<your-repo-name>/`.
+Now, every time you push a change to your `main` branch, the GitHub Action will build and deploy the site automatically. Your live site will be available at `https://<your-github-username>.github.io/<your-repo-name>/`.
