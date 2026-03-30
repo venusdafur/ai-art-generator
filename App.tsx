@@ -1,11 +1,16 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { generateImage } from './services/geminiService';
+import { IMAGE_MODELS, generateImage, getFileExtension, type ImageModel } from './services/geminiService';
 import Spinner from './components/Spinner';
 import Alert from './components/Alert';
 import { WandIcon, DownloadIcon } from './components/Icon';
 
 const API_KEY_STORAGE_KEY = 'gemini-api-key';
+const MODEL_STORAGE_KEY = 'image-model';
+const MODEL_OPTIONS: Array<{ value: ImageModel; label: string }> = [
+  { value: IMAGE_MODELS.imagen4, label: 'Imagen 4' },
+  { value: IMAGE_MODELS.nanoBanana, label: 'Nano Banana' },
+];
 const EXAMPLE_PROMPTS = [
   "A majestic lion with a shimmering, cosmic mane, standing on a lunar surface, photorealistic.",
   "An enchanted forest at twilight, with glowing mushrooms and streams of sparkling water, fantasy art.",
@@ -15,8 +20,10 @@ const EXAMPLE_PROMPTS = [
 
 const App: React.FC = () => {
   const [apiKey, setApiKey] = useState<string>('');
+  const [model, setModel] = useState<ImageModel>(IMAGE_MODELS.imagen4);
   const [prompt, setPrompt] = useState<string>(EXAMPLE_PROMPTS[0]);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imageExtension, setImageExtension] = useState<string>('jpeg');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,6 +43,17 @@ const App: React.FC = () => {
     window.localStorage.removeItem(API_KEY_STORAGE_KEY);
   }, [apiKey]);
 
+  useEffect(() => {
+    const savedModel = window.localStorage.getItem(MODEL_STORAGE_KEY) as ImageModel | null;
+    if (savedModel && MODEL_OPTIONS.some((option) => option.value === savedModel)) {
+      setModel(savedModel);
+    }
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem(MODEL_STORAGE_KEY, model);
+  }, [model]);
+
   const handleGenerateImage = useCallback(async () => {
     if (!prompt || isLoading) return;
     if (!apiKey.trim()) {
@@ -48,8 +66,9 @@ const App: React.FC = () => {
     setImageUrl(null);
 
     try {
-      const generatedImageUrl = await generateImage(prompt, apiKey);
-      setImageUrl(generatedImageUrl);
+      const generatedImage = await generateImage(prompt, apiKey, model);
+      setImageUrl(generatedImage.dataUrl);
+      setImageExtension(getFileExtension(generatedImage.mimeType));
     } catch (e) {
       const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred.';
       setError(errorMessage);
@@ -57,7 +76,7 @@ const App: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [apiKey, prompt, isLoading]);
+  }, [apiKey, model, prompt, isLoading]);
 
   const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setApiKey(e.target.value);
@@ -65,6 +84,10 @@ const App: React.FC = () => {
 
   const handlePromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setPrompt(e.target.value);
+  };
+
+  const handleModelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setModel(e.target.value as ImageModel);
   };
   
   const handleExamplePromptClick = (example: string) => {
@@ -78,7 +101,7 @@ const App: React.FC = () => {
         <div className="lg:w-1/2 flex flex-col gap-6">
           <header className="text-center lg:text-left">
             <h1 className="text-4xl font-bold text-white">AI Art Generator</h1>
-            <p className="text-slate-400 mt-2">Powered by Google's Imagen 4 model</p>
+            <p className="text-slate-400 mt-2">Powered by Google image models</p>
           </header>
 
           <div className="space-y-2">
@@ -97,6 +120,23 @@ const App: React.FC = () => {
              <p className="text-sm text-slate-400">
                Stored in your browser on this device and used for image generation requests.
              </p>
+          </div>
+
+          <div className="space-y-2">
+             <label htmlFor="model" className="block text-lg font-medium text-slate-300">Model</label>
+             <select
+                id="model"
+                value={model}
+                onChange={handleModelChange}
+                className="w-full p-3 bg-slate-800 border-2 border-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
+                disabled={isLoading}
+             >
+                {MODEL_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+             </select>
           </div>
           
           <div className="space-y-4">
@@ -166,7 +206,7 @@ const App: React.FC = () => {
                     />
                      <a
                         href={imageUrl}
-                        download={`ai-art-${Date.now()}.jpeg`}
+                        download={`ai-art-${Date.now()}.${imageExtension}`}
                         className="absolute bottom-4 right-4 bg-black/50 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-sm hover:bg-black/75"
                         title="Download Image"
                       >

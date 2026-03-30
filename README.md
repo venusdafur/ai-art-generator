@@ -1,13 +1,13 @@
 https://venusdafur.github.io/ai-art-generator/
 
 
-# AI Art Generator (Imagen 4)
+# AI Art Generator (Imagen 4 + Nano Banana)
 
-A clean, modern, and responsive web application that allows you to generate stunning and unique images from text prompts using Google's Imagen 4 model. Describe your vision, and let the AI bring it to life in seconds.
+A clean, modern, and responsive web application that allows you to generate stunning and unique images from text prompts using Google's image generation models. Describe your vision, choose a model, and let the AI bring it to life in seconds.
 
 ## ✨ Features
 
-- **Text-to-Image Generation**: Utilizes the `imagen-4.0-generate-001` model for high-quality image creation.
+- **Model Switcher**: Choose between `imagen-4.0-generate-001` and `gemini-2.5-flash-image` in the UI.
 - **Example Prompts**: Get inspired with a curated list of example prompts.
 - **Download Images**: Easily save your generated artwork in JPEG format.
 - **Responsive Design**: A beautiful and functional interface on both desktop and mobile devices.
