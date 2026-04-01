@@ -1,4 +1,4 @@
-https://venusdafur.github.io/ai-art-generator/
+https://realcatdev.github.io/ai-art-generator/
 
 
 # AI Art Generator (Imagen 4 + Nano Banana + Pro)
