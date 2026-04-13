@@ -34,7 +34,7 @@ This project uses Vite for local development and production builds.
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/your-username/ai-art-generator.git
+    git clone https://github.com/realcatdev/ai-art-generator.git
     cd ai-art-generator
     ```
 
